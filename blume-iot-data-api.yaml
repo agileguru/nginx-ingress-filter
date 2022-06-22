@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: blume-iot-data-api
+  name: blume-iot-data-api-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blume-iot-data-api
+  template:
+    metadata:
+      labels:
+        app: blume-iot-data-api
+    spec:
+      containers:
+      - name: blume-iot-data-api-containter
+        image: agileguru/tickle:0.0.1-SNAPSHOT
+        imagePullPolicy: Always
+        env:
+            - name: spring.webflux.basepath
+              value: /blume-iot-data-api
+      imagePullSecrets:
+      - name: alacrity.registry
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: blume-iot-data-api
+  name: blume-iot-data-api-service
+  namespace: default
+spec:
+  type: NodePort
+  ports:
+  - name: webport
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: blume-iot-data-api        

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ram
+  name: ram-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ram
+  template:
+    metadata:
+      labels:
+        app: ram
+    spec:
+      containers:
+      - name: ram-containter
+        image: agileguru/tickle:0.0.1-SNAPSHOT
+        imagePullPolicy: Always
+        env:
+            - name: spring.webflux.basepath
+              value: /ram
+      imagePullSecrets:
+      - name: alacrity.registry
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ram
+  name: ram-service
+  namespace: default
+spec:
+  type: NodePort
+  ports:
+  - name: webport
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: ram        

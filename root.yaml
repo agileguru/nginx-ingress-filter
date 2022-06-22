@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: root
+  name: root-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: root
+  template:
+    metadata:
+      labels:
+        app: root
+    spec:
+      containers:
+      - name: root-containter
+        image: agileguru/tickle:0.0.1-SNAPSHOT
+        imagePullPolicy: Always
+        env:
+            - name: spring.webflux.basepath
+              value: /
+      imagePullSecrets:
+      - name: alacrity.registry
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: root
+  name: root-service
+  namespace: default
+spec:
+  type: NodePort
+  ports:
+  - name: webport
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: root        

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: abdul
+  name: abdul-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: abdul
+  template:
+    metadata:
+      labels:
+        app: abdul
+    spec:
+      containers:
+      - name: abdul-containter
+        image: agileguru/tickle:0.0.1-SNAPSHOT
+        imagePullPolicy: Always
+        env:
+            - name: spring.webflux.basepath
+              value: /abdul
+      imagePullSecrets:
+      - name: alacrity.registry
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: abdul
+  name: abdul-service
+  namespace: default
+spec:
+  type: NodePort
+  ports:
+  - name: webport
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: abdul        

@@ -1,0 +1,58 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-security-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/server-snippet: "
+      if ($uri ~* /swagger-ui/ ) {
+       set $test SWAGGER;
+      }   
+      if ($uri !~* ^/(blume-iot-data-api|abdul)  ) {
+        set $test ${test}_DENY;
+      }
+      if ( $test ~ SWAGGER_DENY ) {
+        return 403;
+      }      
+    "    
+spec:
+  rules:
+  - host: demo.doit-research.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service: 
+            name: root-service
+            port: 
+              number: 8080
+      - path: /blume-iot-data-api
+        pathType: Prefix
+        backend:
+          service: 
+            name: blume-iot-data-api-service
+            port: 
+              number: 8080
+      - path: /blume-iot-data-api/swagger-ui
+        pathType: Prefix
+        backend:
+          service: 
+            name: blume-iot-data-api-service
+            port: 
+              number: 8080                        
+      - path: /ram
+        pathType: Prefix
+        backend:
+          service: 
+            name: ram-service
+            port: 
+              number: 8080 
+      - path: /abdul
+        pathType: Prefix
+        backend:
+          service: 
+            name: abdul-service
+            port: 
+              number: 8080                 
